@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/postgres-common.sh"
+
+ensure_postgres_prereqs
+"${SCRIPT_DIR}/postgres-local-init"
+
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $0 -c configs/posthog_mvp.yaml [additional beton-forge flags]" >&2
+  exit 1
+fi
+
+exec uv run beton-forge "$@"

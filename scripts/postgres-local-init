@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/postgres-common.sh"
+
+ensure_postgres_prereqs
+start_postgres_service
+wait_for_postgres
+ensure_local_role
+ensure_local_database
+
+echo "Local PostgreSQL database is ready."
+echo "  user: ${BF_DB_USER}"
+echo "  database: ${BF_DB_NAME}"
+echo "  dsn: ${BF_DSN}"

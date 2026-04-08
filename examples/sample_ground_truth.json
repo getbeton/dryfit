@@ -1,0 +1,23 @@
+{
+  "dataset_id": "posthog_mvp_v1",
+  "scenario": "posthog_web",
+  "success_event": "purchase",
+  "seed": 42,
+  "signals": [
+    {
+      "signal_instance_id": "sig_000001",
+      "template_id": "billing_then_purchase",
+      "kind": "positive_path",
+      "entity_type": "account",
+      "entity_id": "acct_00124",
+      "event_ids": [
+        "evt_018822",
+        "evt_018827"
+      ],
+      "event_names": [
+        "page_billing",
+        "purchase"
+      ]
+    }
+  ]
+}

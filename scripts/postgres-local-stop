@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/postgres-common.sh"
+
+ensure_postgres_prereqs
+stop_postgres_service
+
+echo "PostgreSQL has been stopped."

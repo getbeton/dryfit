@@ -1,0 +1,53 @@
+dataset_id: telegram_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: telegram_chat
+
+scale:
+  users: 700
+  groups: 60
+  messages_per_user_mean: 14
+  duration_days: 30
+
+success:
+  event_name: event_signup
+  entity_type: user
+
+signals:
+  positive:
+    - id: message_reply_signup
+      path: [message_sent, reply_received, event_signup]
+      count: 90
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: reaction_chain_signup
+      path: [message_sent, reaction_received, event_signup]
+      count: 40
+      cohort_filters: [high_intent, power_user]
+
+  negative:
+    - id: message_then_silence
+      path: [message_sent, reaction_received]
+      count: 80
+      cohort_filters: [low_intent, lurker]
+    - id: leave_after_reply
+      path: [message_sent, reply_sent, leave_group]
+      count: 55
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.04
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.02
+
+faker:
+  locales: [en_US]
+  use_company_names: false
+  use_emails: false

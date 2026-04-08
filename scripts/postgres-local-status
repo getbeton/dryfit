@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/postgres-common.sh"
+
+ensure_postgres_prereqs
+postgres_service_status
+echo
+pg_isready -h "${BF_DB_HOST}" -p "${BF_DB_PORT}" || true

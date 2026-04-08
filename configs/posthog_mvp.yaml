@@ -1,0 +1,53 @@
+dataset_id: posthog_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_web
+
+scale:
+  accounts: 500
+  users_per_account_mean: 4
+  sessions_per_user_mean: 10
+  duration_days: 30
+
+success:
+  event_name: purchase
+  entity_type: account
+
+signals:
+  positive:
+    - id: billing_then_purchase
+      path: [page_billing, purchase]
+      count: 80
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: invite_then_api_key_then_purchase
+      path: [invite_teammate, api_key_created, purchase]
+      count: 35
+      cohort_filters: [high_intent, power_user]
+
+  negative:
+    - id: billing_dropout
+      path: [page_billing, page_pricing]
+      count: 70
+      cohort_filters: [low_intent, lurker, medium_intent]
+    - id: pricing_only_stall
+      path: [page_pricing, page_pricing]
+      count: 110
+      cohort_filters: [low_intent, lurker, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.06
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.05
+  anonymous_actor_probability: 0.02
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

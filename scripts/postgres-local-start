@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/postgres-common.sh"
+
+ensure_postgres_prereqs
+start_postgres_service
+wait_for_postgres
+
+echo "PostgreSQL is running for ${BF_DSN}"

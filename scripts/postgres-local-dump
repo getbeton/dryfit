@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/postgres-common.sh"
+
+ensure_postgres_prereqs
+
+DUMP_DIR="${1:-${SCRIPT_DIR}/../db_dumps}"
+TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
+OUTPUT_DIR="${DUMP_DIR%/}/${BF_DB_NAME}_${TIMESTAMP}"
+OUTPUT_FILE="${OUTPUT_DIR}/database.sql"
+
+mkdir -p "${OUTPUT_DIR}"
+pg_dump \
+  --dbname="${BF_DSN}" \
+  --create \
+  --clean \
+  --if-exists \
+  --no-owner \
+  --file="${OUTPUT_FILE}"
+
+echo "Database dump written to ${OUTPUT_FILE}"

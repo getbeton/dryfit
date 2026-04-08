@@ -1,0 +1,15 @@
+{
+  "dataset_id": "posthog_mvp_v1",
+  "scenario": "posthog_web",
+  "seed": 42,
+  "row_count": 182340,
+  "signal_instance_count": 295,
+  "time_range": {
+    "min_ts": "2026-01-01T00:00:00Z",
+    "max_ts": "2026-01-30T23:59:59Z"
+  },
+  "outputs": {
+    "ground_truth": "ground_truth.json",
+    "manifest": "manifest.json"
+  }
+}

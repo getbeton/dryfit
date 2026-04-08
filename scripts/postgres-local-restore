@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 /path/to/database.sql" >&2
+  exit 1
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/postgres-common.sh"
+
+DUMP_FILE="$1"
+
+if [[ ! -f "${DUMP_FILE}" ]]; then
+  echo "Dump file not found: ${DUMP_FILE}" >&2
+  exit 1
+fi
+
+ensure_postgres_prereqs
+start_postgres_service
+wait_for_postgres
+ensure_local_role
+
+psql postgresql:///postgres -f "${DUMP_FILE}"
+
+echo "Database restore completed from ${DUMP_FILE}"

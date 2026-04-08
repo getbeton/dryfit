@@ -1,0 +1,34 @@
+[project]
+name = "beton-forge"
+version = "0.1.0"
+description = "Scenario-driven synthetic analytics data generator with hidden benchmark truth."
+readme = "README.md"
+requires-python = "==3.12.*"
+license = { text = "MIT" }
+authors = [
+  { name = "Aleksandr Markelov" }
+]
+dependencies = [
+  "faker==37.1.0",
+  "psycopg[binary]>=3.2,<3.3",
+  "pydantic>=2.11,<3",
+  "pyyaml>=6.0.2,<7",
+  "typer>=0.16,<0.17",
+]
+
+[project.scripts]
+beton-forge = "beton_forge.cli:app"
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/beton_forge"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
