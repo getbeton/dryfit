@@ -19,6 +19,7 @@ def generate_dataset(
     config_path: str | Path,
     output_dir: str | Path | None = None,
     *,
+    dsn: str | None = None,
     skip_db_write: bool = False,
     dry_run: bool = False,
 ) -> GenerationResult:
@@ -26,6 +27,7 @@ def generate_dataset(
     return generate_from_config(
         config,
         output_dir=output_dir,
+        dsn=dsn,
         skip_db_write=skip_db_write,
         dry_run=dry_run,
     )
@@ -35,6 +37,7 @@ def generate_from_config(
     config: ForgeConfig,
     output_dir: str | Path | None = None,
     *,
+    dsn: str | None = None,
     skip_db_write: bool = False,
     dry_run: bool = False,
 ) -> GenerationResult:
@@ -93,7 +96,7 @@ def generate_from_config(
         write_ground_truth(truth, truth_path)
         write_manifest(manifest, manifest_path)
         if not skip_db_write:
-            write_events(config.backend.dsn, final_events)
+            write_events(dsn or config.backend.dsn, final_events)
 
     return GenerationResult(
         events=final_events,

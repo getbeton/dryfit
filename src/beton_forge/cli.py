@@ -13,6 +13,11 @@ app = typer.Typer(help="Generate synthetic benchmark datasets for product analyt
 def generate(
     config: Path = typer.Option(..., "--config", "-c", exists=True, readable=True),
     output_dir: Path | None = typer.Option(None, "--output-dir"),
+    dsn: str | None = typer.Option(
+        None,
+        "--dsn",
+        help="Override the PostgreSQL DSN for this run without editing the config file.",
+    ),
     dry_run: bool = typer.Option(False, "--dry-run"),
     skip_db_write: bool = typer.Option(False, "--skip-db-write"),
     print_summary: bool = typer.Option(False, "--print-summary"),
@@ -20,6 +25,7 @@ def generate(
     result = generate_dataset(
         config,
         output_dir=output_dir,
+        dsn=dsn,
         dry_run=dry_run,
         skip_db_write=skip_db_write,
     )

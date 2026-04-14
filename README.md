@@ -116,6 +116,60 @@ Stop the local PostgreSQL service:
 ./scripts/postgres-local-stop
 ```
 
+## Docker Inspection Workflow
+
+For visual inspection in Grafana, the repo now includes a Docker Compose stack with:
+
+- PostgreSQL on `127.0.0.1:54329`
+- Grafana on `http://127.0.0.1:3000`
+- a provisioned PostgreSQL datasource
+- a provisioned dashboard: `Generated Event Inspection`
+
+Start the full inspection stack with:
+
+```bash
+docker compose up -d
+```
+
+Local-only credentials used by the stack:
+
+- PostgreSQL writer: `beton_forge_writer` / `beton_forge_writer`
+- PostgreSQL Grafana reader: `grafana_reader` / `grafana_reader`
+- Grafana admin: `admin` / `admin`
+
+Generate data into the Dockerized PostgreSQL without editing the checked-in config:
+
+```bash
+uv run beton-forge \
+  -c configs/posthog_mvp.yaml \
+  --dsn postgresql://beton_forge_writer:beton_forge_writer@127.0.0.1:54329/beton_forge \
+  --print-summary
+```
+
+You can do the same with the Telegram config:
+
+```bash
+uv run beton-forge \
+  -c configs/telegram_mvp.yaml \
+  --dsn postgresql://beton_forge_writer:beton_forge_writer@127.0.0.1:54329/beton_forge \
+  --print-summary
+```
+
+Then open Grafana:
+
+```bash
+open http://127.0.0.1:3000
+```
+
+If `open` is not available on your machine, use your browser directly. The provisioned home dashboard lets you:
+
+- inspect event counts over time
+- filter by `identity_id` (`entity_id` in the database)
+- filter by `event_id`
+- inspect raw rows including `event_props`
+
+To iterate on generation, change the config, rerun the generator with the same `--dsn`, and refresh Grafana. The dashboard and datasource stay in place because they are provisioned from files in this repo.
+
 ### Dump and restore the database
 
 Dump the local database to a portable SQL file:
