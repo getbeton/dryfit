@@ -6,7 +6,7 @@ from typing import Any
 
 from faker import Faker
 
-from dryfit.config import ForgeConfig
+from dryfit.config import DryfitConfig
 from dryfit.models import EventRecord
 
 
@@ -22,7 +22,7 @@ class BaseScenario(ABC):
     allowed_signal_entity_types: set[str]
     cohort_weights: dict[str, int]
 
-    def __init__(self, config: ForgeConfig, fake: Faker):
+    def __init__(self, config: DryfitConfig, fake: Faker):
         self.config = config
         self.fake = fake
 

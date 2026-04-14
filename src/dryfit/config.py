@@ -79,7 +79,7 @@ class FakerConfig(BaseModel):
     use_emails: bool = True
 
 
-class ForgeConfig(BaseModel):
+class DryfitConfig(BaseModel):
     dataset_id: str = Field(min_length=1)
     seed: int = Field(default=42)
     backend: BackendConfig
@@ -91,14 +91,14 @@ class ForgeConfig(BaseModel):
     faker: FakerConfig = Field(default_factory=FakerConfig)
 
     @model_validator(mode="after")
-    def validate_signal_ids(self) -> "ForgeConfig":
+    def validate_signal_ids(self) -> "DryfitConfig":
         ids = [template.id for template in self.signals.positive + self.signals.negative]
         if len(ids) != len(set(ids)):
             raise ValueError("signal template ids must be unique across positive and negative templates")
         return self
 
 
-def load_config(path: str | Path) -> ForgeConfig:
+def load_config(path: str | Path) -> DryfitConfig:
     with Path(path).open("r", encoding="utf-8") as handle:
         data = yaml.safe_load(handle) or {}
-    return ForgeConfig.model_validate(data)
+    return DryfitConfig.model_validate(data)

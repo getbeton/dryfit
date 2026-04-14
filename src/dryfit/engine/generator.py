@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 from pathlib import Path
 
-from dryfit.config import ForgeConfig, load_config
+from dryfit.config import DryfitConfig, load_config
 from dryfit.faker_utils import build_faker
 from dryfit.models import GenerationResult, GroundTruthDocument, ManifestDocument
 from dryfit.postgres import write_events
@@ -23,7 +23,7 @@ def generate_dataset(
     skip_db_write: bool = False,
     dry_run: bool = False,
 ) -> GenerationResult:
-    config = load_config(config_path) if not isinstance(config_path, ForgeConfig) else config_path
+    config = load_config(config_path) if not isinstance(config_path, DryfitConfig) else config_path
     return generate_from_config(
         config,
         output_dir=output_dir,
@@ -34,7 +34,7 @@ def generate_dataset(
 
 
 def generate_from_config(
-    config: ForgeConfig,
+    config: DryfitConfig,
     output_dir: str | Path | None = None,
     *,
     dsn: str | None = None,

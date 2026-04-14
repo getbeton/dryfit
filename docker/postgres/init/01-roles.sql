@@ -1,4 +1,4 @@
-connect dryfit
+\connect dryfit
 
 DO $$
 BEGIN

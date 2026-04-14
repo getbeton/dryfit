@@ -1,4 +1,4 @@
-"""Beton-forge synthetic benchmark generator."""
+"""Dryfit synthetic benchmark generator."""
 
 from dryfit.engine.generator import generate_dataset
 

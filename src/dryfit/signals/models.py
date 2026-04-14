@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from dryfit.config import ForgeConfig
+from dryfit.config import DryfitConfig
 from dryfit.models import SignalTemplate
 
 
-def build_templates(config: ForgeConfig) -> list[SignalTemplate]:
+def build_templates(config: DryfitConfig) -> list[SignalTemplate]:
     templates: list[SignalTemplate] = []
     for raw in config.signals.positive:
         templates.append(
