@@ -6,8 +6,8 @@ from typing import Any
 
 from faker import Faker
 
-from beton_forge.config import ForgeConfig
-from beton_forge.models import EventRecord
+from dryfit.config import ForgeConfig
+from dryfit.models import EventRecord
 
 
 EntityMap = dict[str, list[dict[str, Any]]]

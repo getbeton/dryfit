@@ -4,8 +4,8 @@ from collections import defaultdict
 from datetime import timedelta
 from typing import Any
 
-from beton_forge.engine.timing import bounded_datetime
-from beton_forge.models import EventRecord, SignalInstance, SignalTemplate
+from dryfit.engine.timing import bounded_datetime
+from dryfit.models import EventRecord, SignalInstance, SignalTemplate
 
 
 class SignalInstantiator:

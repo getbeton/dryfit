@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from beton_forge.models import GroundTruthDocument, ManifestDocument
+from dryfit.models import GroundTruthDocument, ManifestDocument
 
 
 def write_ground_truth(document: GroundTruthDocument, path: Path) -> None:

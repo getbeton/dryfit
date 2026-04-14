@@ -1,5 +1,5 @@
 [project]
-name = "beton-forge"
+name = "dryfit"
 version = "0.1.0"
 description = "Scenario-driven synthetic analytics data generator with hidden benchmark truth."
 readme = "README.md"
@@ -17,14 +17,14 @@ dependencies = [
 ]
 
 [project.scripts]
-beton-forge = "beton_forge.cli:app"
+dryfit = "dryfit.cli:app"
 
 [build-system]
 requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/beton_forge"]
+packages = ["src/dryfit"]
 
 [tool.ruff]
 line-length = 100

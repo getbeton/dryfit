@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from beton_forge.config import load_config
-from beton_forge.faker_utils import build_faker
-from beton_forge.scenarios import SCENARIO_REGISTRY
+from dryfit.config import load_config
+from dryfit.faker_utils import build_faker
+from dryfit.scenarios import SCENARIO_REGISTRY
 
 BUSINESS_MODEL_CONFIGS = [
     Path("configs/posthog_seat_based_mvp.yaml"),

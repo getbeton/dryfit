@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from beton_forge.models import EventRecord
+from dryfit.models import EventRecord
 
 
 class NoiseInjector:

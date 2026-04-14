@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from beton_forge.models import EventRecord
-from beton_forge.scenarios.base import BaseScenario, EntityMap
-from beton_forge.engine.timing import bounded_datetime, random_jitter_seconds
+from dryfit.models import EventRecord
+from dryfit.scenarios.base import BaseScenario, EntityMap
+from dryfit.engine.timing import bounded_datetime, random_jitter_seconds
 
 
 class PostHogWebScenario(BaseScenario):

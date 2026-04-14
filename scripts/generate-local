@@ -9,8 +9,8 @@ ensure_postgres_prereqs
 "${SCRIPT_DIR}/postgres-local-init"
 
 if [[ $# -eq 0 ]]; then
-  echo "Usage: $0 -c configs/posthog_mvp.yaml [additional beton-forge flags]" >&2
+  echo "Usage: $0 -c configs/posthog_mvp.yaml [additional dryfit flags]" >&2
   exit 1
 fi
 
-exec uv run beton-forge "$@"
+exec uv run dryfit "$@"

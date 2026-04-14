@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from beton_forge.config import ForgeConfig
-from beton_forge.models import SignalTemplate
+from dryfit.config import ForgeConfig
+from dryfit.models import SignalTemplate
 
 
 def build_templates(config: ForgeConfig) -> list[SignalTemplate]:

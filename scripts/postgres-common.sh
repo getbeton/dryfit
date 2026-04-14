@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-BF_DB_NAME="${BF_DB_NAME:-beton_forge}"
+BF_DB_NAME="${BF_DB_NAME:-dryfit}"
 BF_DB_USER="${BF_DB_USER:-$USER}"
 BF_DB_HOST="${BF_DB_HOST:-/var/run/postgresql}"
 BF_DB_PORT="${BF_DB_PORT:-5432}"

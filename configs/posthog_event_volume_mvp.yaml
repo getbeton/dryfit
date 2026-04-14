@@ -3,7 +3,7 @@ seed: 42
 
 backend:
   kind: postgres
-  dsn: postgresql:///beton_forge
+  dsn: postgresql:///dryfit
 
 scenario:
   kind: posthog_event_volume

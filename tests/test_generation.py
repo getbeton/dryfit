@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 from typer.testing import CliRunner
 
-from beton_forge.cli import app
-from beton_forge.engine.generator import generate_dataset
-from beton_forge.scenarios.posthog_business_models import COMBINED_BUSINESS_MODEL_EVENTS
+from dryfit.cli import app
+from dryfit.engine.generator import generate_dataset
+from dryfit.scenarios.posthog_business_models import COMBINED_BUSINESS_MODEL_EVENTS
 
 BUSINESS_MODEL_CONFIGS = [
     Path("configs/posthog_seat_based_mvp.yaml"),
@@ -38,24 +38,24 @@ def test_generation_is_deterministic_for_dry_run() -> None:
 def test_generate_dataset_uses_dsn_override_for_db_writes() -> None:
     with TemporaryDirectory() as tmpdir:
         with (
-            patch("beton_forge.engine.generator.write_events") as write_events,
-            patch("beton_forge.engine.generator.write_ground_truth"),
-            patch("beton_forge.engine.generator.write_manifest"),
+            patch("dryfit.engine.generator.write_events") as write_events,
+            patch("dryfit.engine.generator.write_ground_truth"),
+            patch("dryfit.engine.generator.write_manifest"),
         ):
             generate_dataset(
                 Path("configs/posthog_mvp.yaml"),
                 output_dir=tmpdir,
-                dsn="postgresql://override-host/beton_forge",
+                dsn="postgresql://override-host/dryfit",
             )
 
     write_events.assert_called_once()
-    assert write_events.call_args.args[0] == "postgresql://override-host/beton_forge"
+    assert write_events.call_args.args[0] == "postgresql://override-host/dryfit"
 
 
 def test_cli_passes_dsn_override_to_generator() -> None:
     runner = CliRunner()
 
-    with patch("beton_forge.cli.generate_dataset") as generate:
+    with patch("dryfit.cli.generate_dataset") as generate:
         result = runner.invoke(
             app,
             [
@@ -63,13 +63,13 @@ def test_cli_passes_dsn_override_to_generator() -> None:
                 "configs/posthog_mvp.yaml",
                 "--dry-run",
                 "--dsn",
-                "postgresql://override-host/beton_forge",
+                "postgresql://override-host/dryfit",
             ],
         )
 
     assert result.exit_code == 0
     generate.assert_called_once()
-    assert generate.call_args.kwargs["dsn"] == "postgresql://override-host/beton_forge"
+    assert generate.call_args.kwargs["dsn"] == "postgresql://override-host/dryfit"
 
 
 def test_business_model_configs_generate_non_empty_dry_runs() -> None:

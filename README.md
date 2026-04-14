@@ -1,6 +1,6 @@
-# beton-forge
+# dryfit
 
-`beton-forge` generates synthetic analytics event data plus hidden benchmark truth so agents can be tested on signal discovery tasks.
+`dryfit` generates synthetic analytics event data plus hidden benchmark truth so agents can be tested on signal discovery tasks.
 
 ## Status
 
@@ -44,7 +44,7 @@ The sample configs use a local Unix-socket DSN:
 ```yaml
 backend:
   kind: postgres
-  dsn: postgresql:///beton_forge
+  dsn: postgresql:///dryfit
 ```
 
 That avoids assuming a TCP listener on `127.0.0.1:5432` and works well for a local Linux install.
@@ -65,7 +65,7 @@ What `postgres-local-init` does:
 - waits until the server is ready
 - creates a PostgreSQL role matching your current Linux username if needed
 - grants that role `CREATEDB`
-- creates the `beton_forge` database if needed
+- creates the `dryfit` database if needed
 
 ### Generate data into the local database
 
@@ -79,8 +79,8 @@ Use the wrapper if you want the repo to start and initialize the local database 
 If you already started the database yourself, the direct CLI is:
 
 ```bash
-uv run beton-forge -c configs/posthog_mvp.yaml --print-summary
-uv run beton-forge -c configs/telegram_mvp.yaml --output-dir ./artifacts/telegram
+uv run dryfit -c configs/posthog_mvp.yaml --print-summary
+uv run dryfit -c configs/telegram_mvp.yaml --output-dir ./artifacts/telegram
 ```
 
 Helpful flags:
@@ -93,7 +93,7 @@ Helpful flags:
 If you want to generate artifacts without touching PostgreSQL:
 
 ```bash
-uv run beton-forge -c configs/posthog_mvp.yaml --skip-db-write --print-summary
+uv run dryfit -c configs/posthog_mvp.yaml --skip-db-write --print-summary
 ```
 
 ### Inspect or manage the local database
@@ -133,25 +133,25 @@ docker compose up -d
 
 Local-only credentials used by the stack:
 
-- PostgreSQL writer: `beton_forge_writer` / `beton_forge_writer`
+- PostgreSQL writer: `dryfit_writer` / `dryfit_writer`
 - PostgreSQL Grafana reader: `grafana_reader` / `grafana_reader`
 - Grafana admin: `admin` / `admin`
 
 Generate data into the Dockerized PostgreSQL without editing the checked-in config:
 
 ```bash
-uv run beton-forge \
+uv run dryfit \
   -c configs/posthog_mvp.yaml \
-  --dsn postgresql://beton_forge_writer:beton_forge_writer@127.0.0.1:54329/beton_forge \
+  --dsn postgresql://dryfit_writer:dryfit_writer@127.0.0.1:54329/dryfit \
   --print-summary
 ```
 
 You can do the same with the Telegram config:
 
 ```bash
-uv run beton-forge \
+uv run dryfit \
   -c configs/telegram_mvp.yaml \
-  --dsn postgresql://beton_forge_writer:beton_forge_writer@127.0.0.1:54329/beton_forge \
+  --dsn postgresql://dryfit_writer:dryfit_writer@127.0.0.1:54329/dryfit \
   --print-summary
 ```
 
@@ -183,7 +183,7 @@ By default this writes to `db_dumps/<database>_<timestamp>/database.sql`.
 Restore that dump on another machine after PostgreSQL is installed:
 
 ```bash
-./scripts/postgres-local-restore ./db_dumps/beton_forge_YYYYMMDD_HHMMSS/database.sql
+./scripts/postgres-local-restore ./db_dumps/dryfit_YYYYMMDD_HHMMSS/database.sql
 ```
 
 For a full dataset handoff, copy both:
@@ -361,22 +361,22 @@ Any non-dry run replaces the PostgreSQL `events` table with the rows from the se
 For the local Linux PostgreSQL workflow:
 
 ```bash
-uv run beton-forge -c configs/posthog_seat_based_mvp.yaml --print-summary
+uv run dryfit -c configs/posthog_seat_based_mvp.yaml --print-summary
 ```
 
 You can swap in any of the new configs, for example:
 
 ```bash
-uv run beton-forge -c configs/posthog_usage_based_mvp.yaml --print-summary
-uv run beton-forge -c configs/posthog_business_models_combined_mvp.yaml --print-summary
+uv run dryfit -c configs/posthog_usage_based_mvp.yaml --print-summary
+uv run dryfit -c configs/posthog_business_models_combined_mvp.yaml --print-summary
 ```
 
 For the Dockerized PostgreSQL inspection stack:
 
 ```bash
-uv run beton-forge \
+uv run dryfit \
   -c configs/posthog_feature_gated_mvp.yaml \
-  --dsn postgresql://beton_forge_writer:beton_forge_writer@127.0.0.1:54329/beton_forge \
+  --dsn postgresql://dryfit_writer:dryfit_writer@127.0.0.1:54329/dryfit \
   --print-summary
 ```
 

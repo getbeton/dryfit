@@ -3,16 +3,16 @@ from __future__ import annotations
 import random
 from pathlib import Path
 
-from beton_forge.config import ForgeConfig, load_config
-from beton_forge.faker_utils import build_faker
-from beton_forge.models import GenerationResult, GroundTruthDocument, ManifestDocument
-from beton_forge.postgres import write_events
-from beton_forge.scenarios import SCENARIO_REGISTRY
-from beton_forge.signals.instantiator import SignalInstantiator
-from beton_forge.signals.models import build_templates
-from beton_forge.engine.ids import IdFactory
-from beton_forge.engine.noise import NoiseInjector
-from beton_forge.truth import write_ground_truth, write_manifest
+from dryfit.config import ForgeConfig, load_config
+from dryfit.faker_utils import build_faker
+from dryfit.models import GenerationResult, GroundTruthDocument, ManifestDocument
+from dryfit.postgres import write_events
+from dryfit.scenarios import SCENARIO_REGISTRY
+from dryfit.signals.instantiator import SignalInstantiator
+from dryfit.signals.models import build_templates
+from dryfit.engine.ids import IdFactory
+from dryfit.engine.noise import NoiseInjector
+from dryfit.truth import write_ground_truth, write_manifest
 
 
 def generate_dataset(

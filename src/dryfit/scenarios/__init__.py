@@ -1,4 +1,4 @@
-from beton_forge.scenarios.posthog_business_models import (
+from dryfit.scenarios.posthog_business_models import (
     BusinessModelsCombinedPostHogScenario,
     ContactRecordPostHogScenario,
     CreditsTokenPostHogScenario,
@@ -13,8 +13,8 @@ from beton_forge.scenarios.posthog_business_models import (
     TransactionVolumePostHogScenario,
     UsageBasedPostHogScenario,
 )
-from beton_forge.scenarios.posthog_web import PostHogWebScenario
-from beton_forge.scenarios.telegram_chat import TelegramChatScenario
+from dryfit.scenarios.posthog_web import PostHogWebScenario
+from dryfit.scenarios.telegram_chat import TelegramChatScenario
 
 SCENARIO_REGISTRY = {
     "posthog_web": PostHogWebScenario,

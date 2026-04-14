@@ -4,7 +4,7 @@ from pathlib import Path
 
 import typer
 
-from beton_forge.engine.generator import generate_dataset
+from dryfit.engine.generator import generate_dataset
 
 app = typer.Typer(help="Generate synthetic benchmark datasets for product analytics agents.")
 

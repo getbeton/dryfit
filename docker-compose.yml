@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: beton_forge
+      POSTGRES_DB: dryfit
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -11,7 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d beton_forge"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dryfit"]
       interval: 5s
       timeout: 5s
       retries: 20
