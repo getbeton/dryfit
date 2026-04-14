@@ -1,0 +1,53 @@
+dataset_id: posthog_credits_token_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_credits_token
+
+scale:
+  accounts: 3000
+  users_per_account_mean: 8
+  sessions_per_user_mean: 16
+  duration_days: 300
+
+success:
+  event_name: credits_purchased
+  entity_type: account
+
+signals:
+  positive:
+    - id: warning_to_purchase
+      path: [low_balance_warning, credits_purchased]
+      count: 850
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: auto_refill_conversion
+      path: [low_balance_warning, auto_refill_triggered, credits_purchased]
+      count: 450
+      cohort_filters: [high_intent, power_user]
+
+  negative:
+    - id: burn_to_warning_only
+      path: [credits_used, low_balance_warning]
+      count: 650
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: repeated_warning_decline
+      path: [low_balance_warning, low_balance_warning]
+      count: 350
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.02
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

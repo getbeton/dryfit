@@ -1,0 +1,53 @@
+dataset_id: posthog_storage_based_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_storage_based
+
+scale:
+  accounts: 260
+  users_per_account_mean: 4
+  sessions_per_user_mean: 7
+  duration_days: 30
+
+success:
+  event_name: file_uploaded
+  entity_type: account
+
+signals:
+  positive:
+    - id: record_then_upload
+      path: [record_created, file_uploaded]
+      count: 80
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: repeated_upload_growth
+      path: [file_uploaded, file_uploaded]
+      count: 55
+      cohort_filters: [medium_intent, power_user]
+
+  negative:
+    - id: upload_hits_storage_warning
+      path: [file_uploaded, storage_warning_shown]
+      count: 45
+      cohort_filters: [low_intent, medium_intent, lurker]
+    - id: repeated_storage_warning
+      path: [storage_warning_shown, storage_warning_shown]
+      count: 25
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

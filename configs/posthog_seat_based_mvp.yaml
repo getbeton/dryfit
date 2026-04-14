@@ -1,0 +1,53 @@
+dataset_id: posthog_seat_based_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_seat_based
+
+scale:
+  accounts: 3000
+  users_per_account_mean: 5
+  sessions_per_user_mean: 8
+  duration_days: 364
+
+success:
+  event_name: seat_activated
+  entity_type: account
+
+signals:
+  positive:
+    - id: invite_signup_activation
+      path: [invite_sent, user_signed_up, seat_activated]
+      count: 80
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: role_assignment_activation
+      path: [role_assigned, seat_activated]
+      count: 55
+      cohort_filters: [high_intent, power_user]
+
+  negative:
+    - id: invite_signup_stall
+      path: [invite_sent, user_signed_up]
+      count: 60
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: activation_then_deactivation
+      path: [seat_activated, seat_deactivated]
+      count: 35
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.04
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.02
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.02
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

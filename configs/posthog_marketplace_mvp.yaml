@@ -1,0 +1,53 @@
+dataset_id: posthog_marketplace_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_marketplace
+
+scale:
+  accounts: 240
+  users_per_account_mean: 5
+  sessions_per_user_mean: 8
+  duration_days: 30
+
+success:
+  event_name: listing_published
+  entity_type: account
+
+signals:
+  positive:
+    - id: connected_storefront_listing
+      path: [account_connected, storefront_activated, listing_published]
+      count: 70
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: integration_listing_publish
+      path: [integration_enabled, listing_published]
+      count: 45
+      cohort_filters: [high_intent, medium_intent]
+
+  negative:
+    - id: connected_storefront_stall
+      path: [account_connected, storefront_activated]
+      count: 55
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: integration_backtracking
+      path: [integration_enabled, account_connected]
+      count: 35
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

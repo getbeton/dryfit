@@ -1,0 +1,53 @@
+dataset_id: posthog_feature_gated_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_feature_gated
+
+scale:
+  accounts: 260
+  users_per_account_mean: 4
+  sessions_per_user_mean: 8
+  duration_days: 30
+
+success:
+  event_name: upgrade_clicked
+  entity_type: account
+
+signals:
+  positive:
+    - id: gate_to_upgrade
+      path: [feature_gate_shown, upgrade_clicked]
+      count: 75
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: advanced_feature_gate_upgrade
+      path: [advanced_feature_attempted, feature_gate_shown, upgrade_clicked]
+      count: 40
+      cohort_filters: [high_intent, power_user]
+
+  negative:
+    - id: advanced_feature_denied
+      path: [advanced_feature_attempted, feature_gate_shown]
+      count: 65
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: upgrade_then_downgrade
+      path: [upgrade_clicked, downgrade]
+      count: 25
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.02
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

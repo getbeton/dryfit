@@ -1,0 +1,53 @@
+dataset_id: posthog_business_models_combined_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_business_models_combined
+
+scale:
+  accounts: 360
+  users_per_account_mean: 5
+  sessions_per_user_mean: 10
+  duration_days: 30
+
+success:
+  event_name: upgrade_clicked
+  entity_type: account
+
+signals:
+  positive:
+    - id: limit_modal_upgrade
+      path: [limit_reached, upgrade_modal_shown, upgrade_clicked]
+      count: 50
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: gate_usage_upgrade
+      path: [feature_gate_shown, api_request, compute_hours_used, upgrade_clicked]
+      count: 30
+      cohort_filters: [high_intent, power_user]
+
+  negative:
+    - id: instrumentation_without_upgrade
+      path: [source_connected, $pageview, custom_event_tracked]
+      count: 35
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: credit_warning_without_upgrade
+      path: [credits_used, low_balance_warning]
+      count: 30
+      cohort_filters: [low_intent, lurker, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.02
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

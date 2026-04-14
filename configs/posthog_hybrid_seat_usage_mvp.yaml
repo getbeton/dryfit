@@ -1,0 +1,53 @@
+dataset_id: posthog_hybrid_seat_usage_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_hybrid_seat_usage
+
+scale:
+  accounts: 320
+  users_per_account_mean: 5
+  sessions_per_user_mean: 9
+  duration_days: 30
+
+success:
+  event_name: compute_hours_used
+  entity_type: account
+
+signals:
+  positive:
+    - id: seat_growth_then_usage_growth
+      path: [invite_sent, user_signed_up, seat_activated, api_request, compute_hours_used]
+      count: 70
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: activated_usage_completion
+      path: [seat_activated, api_request, job_completed, compute_hours_used]
+      count: 45
+      cohort_filters: [high_intent, power_user]
+
+  negative:
+    - id: seats_without_usage
+      path: [invite_sent, user_signed_up, seat_activated]
+      count: 60
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: request_job_no_overage
+      path: [api_request, job_completed]
+      count: 55
+      cohort_filters: [low_intent, lurker, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.02
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

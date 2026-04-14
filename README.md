@@ -221,6 +221,167 @@ Artifacts default to `artifacts/<dataset_id>/`.
 
 The PostgreSQL writer replaces the target `events` table each run. This keeps benchmark datasets isolated and reproducible.
 
+## Business Model Scenarios
+
+The repo now includes additional PostHog DWH scenarios based directly on the business-model research mapping: value metric -> target events -> proxy signal patterns. These configs still use the current path-based signal engine, so the implemented "signals" are sequence proxies for the researched business metrics rather than true MoM or quota-style aggregations.
+
+### Seat-based SaaS
+
+- Config: `configs/posthog_seat_based_mvp.yaml`
+- Value metric: active seats / users
+- Target events: `invite_sent`, `user_signed_up`, `$identify`, `role_assigned`, `seat_activated`, `seat_deactivated`
+- Success event: `seat_activated`
+- Positive signals: `invite_sent -> user_signed_up -> seat_activated`, `role_assigned -> seat_activated`
+- Negative signals: `invite_sent -> user_signed_up`, `seat_activated -> seat_deactivated`
+- Research metrics this proxies: seat growth %, active/total seat ratio, invite-to-activation rate
+
+### Usage-based (metered)
+
+- Config: `configs/posthog_usage_based_mvp.yaml`
+- Value metric: API calls, compute hours, messages, requests
+- Target events: `api_request`, `job_completed`, `message_sent`, `compute_hours_used`
+- Success event: `job_completed`
+- Positive signals: `api_request -> job_completed`, `message_sent -> compute_hours_used -> job_completed`
+- Negative signals: `api_request -> compute_hours_used`, `message_sent -> message_sent`
+- Research metrics this proxies: usage velocity, quota consumption, usage acceleration
+
+### Transaction / volume-based
+
+- Config: `configs/posthog_transaction_volume_mvp.yaml`
+- Value metric: transactions processed, GMV, payments
+- Target events: `payment_completed`, `order_created`, `invoice_generated`, `refund_issued`
+- Success event: `payment_completed`
+- Positive signals: `order_created -> payment_completed`, `order_created -> invoice_generated -> payment_completed`
+- Negative signals: `order_created -> invoice_generated`, `payment_completed -> refund_issued`
+- Research metrics this proxies: transaction volume trend, avg transaction value growth, transaction frequency per account
+
+### Storage-based
+
+- Config: `configs/posthog_storage_based_mvp.yaml`
+- Value metric: GB stored, records managed, files hosted
+- Target events: `file_uploaded`, `record_created`, `storage_warning_shown`
+- Success event: `file_uploaded`
+- Positive signals: `record_created -> file_uploaded`, `file_uploaded -> file_uploaded`
+- Negative signals: `file_uploaded -> storage_warning_shown`, `storage_warning_shown -> storage_warning_shown`
+- Research metrics this proxies: storage growth rate, days-to-tier-limit, upload frequency trend
+
+### Contact / record-based
+
+- Config: `configs/posthog_contact_record_mvp.yaml`
+- Value metric: contacts, leads, subscribers, accounts managed
+- Target events: `contact_created`, `list_imported`, `enrichment_completed`, `segment_created`
+- Success event: `contact_created`
+- Positive signals: `list_imported -> contact_created`, `contact_created -> enrichment_completed -> contact_created`
+- Negative signals: `list_imported -> segment_created`, `contact_created -> segment_created`
+- Research metrics this proxies: contact growth rate, % of contact limit used, import frequency
+
+### Feature-gated (tiered)
+
+- Config: `configs/posthog_feature_gated_mvp.yaml`
+- Value metric: plan tier / feature access level
+- Target events: `feature_gate_shown`, `upgrade_clicked`, `advanced_feature_attempted`, `downgrade`
+- Success event: `upgrade_clicked`
+- Positive signals: `feature_gate_shown -> upgrade_clicked`, `advanced_feature_attempted -> feature_gate_shown -> upgrade_clicked`
+- Negative signals: `advanced_feature_attempted -> feature_gate_shown`, `upgrade_clicked -> downgrade`
+- Research metrics this proxies: gate-hit frequency, advanced-feature attempt rate, time between gate hits
+
+### Platform / marketplace
+
+- Config: `configs/posthog_marketplace_mvp.yaml`
+- Value metric: listings, storefronts, connected accounts, integrations
+- Target events: `listing_published`, `storefront_activated`, `account_connected`, `integration_enabled`
+- Success event: `listing_published`
+- Positive signals: `account_connected -> storefront_activated -> listing_published`, `integration_enabled -> listing_published`
+- Negative signals: `account_connected -> storefront_activated`, `integration_enabled -> account_connected`
+- Research metrics this proxies: active listing growth, seller/buyer activation rate, marketplace liquidity ratio
+
+### Revenue-share / take-rate
+
+- Config: `configs/posthog_revenue_share_mvp.yaml`
+- Value metric: revenue processed, bookings, GMV through platform
+- Target events: `booking_completed`, `payout_processed`, `commission_calculated`
+- Success event: `commission_calculated`
+- Positive signals: `booking_completed -> commission_calculated`, `booking_completed -> payout_processed -> commission_calculated`
+- Negative signals: `booking_completed -> payout_processed`, `payout_processed -> payout_processed`
+- Research metrics this proxies: GMV growth trend, take-rate stability, payout frequency
+
+### Credits / token-based
+
+- Config: `configs/posthog_credits_token_mvp.yaml`
+- Value metric: credits consumed, tokens used, compute units
+- Target events: `credits_purchased`, `credits_used`, `low_balance_warning`, `auto_refill_triggered`
+- Success event: `credits_purchased`
+- Positive signals: `low_balance_warning -> credits_purchased`, `low_balance_warning -> auto_refill_triggered -> credits_purchased`
+- Negative signals: `credits_used -> low_balance_warning`, `low_balance_warning -> low_balance_warning`
+- Research metrics this proxies: burn rate, days-to-zero, top-up frequency, auto-refill adoption
+
+### Hybrid (seat + usage)
+
+- Config: `configs/posthog_hybrid_seat_usage_mvp.yaml`
+- Value metric: seats plus usage overage
+- Target events: `invite_sent`, `user_signed_up`, `seat_activated`, `api_request`, `job_completed`, `compute_hours_used`
+- Success event: `compute_hours_used`
+- Positive signals: `invite_sent -> user_signed_up -> seat_activated -> api_request -> compute_hours_used`, `seat_activated -> api_request -> job_completed -> compute_hours_used`
+- Negative signals: `invite_sent -> user_signed_up -> seat_activated`, `api_request -> job_completed`
+- Research metrics this proxies: seat growth plus usage acceleration, overage frequency
+
+### Freemium-to-paid
+
+- Config: `configs/posthog_freemium_to_paid_mvp.yaml`
+- Value metric: active usage hitting free-tier limits
+- Target events: `limit_reached`, `upgrade_modal_shown`, `feature_blocked`, `trial_started`
+- Success event: `trial_started`
+- Positive signals: `limit_reached -> upgrade_modal_shown -> trial_started`, `feature_blocked -> upgrade_modal_shown -> trial_started`
+- Negative signals: `limit_reached -> upgrade_modal_shown`, `feature_blocked -> feature_blocked`
+- Research metrics this proxies: time-to-limit, limit-hit frequency, conversion funnel drop-off
+
+### Event-volume SaaS
+
+- Config: `configs/posthog_event_volume_mvp.yaml`
+- Value metric: events tracked, data points ingested, log lines
+- Target events: `$pageview`, `$autocapture`, `custom_event_tracked`, `source_connected`, `schema_changed`
+- Success event: `custom_event_tracked`
+- Positive signals: `source_connected -> $pageview -> custom_event_tracked`, `schema_changed -> custom_event_tracked`
+- Negative signals: `source_connected -> $pageview`, `schema_changed -> schema_changed`
+- Research metrics this proxies: ingestion volume trend, event-type diversity, new-source activation rate
+
+### Combined coverage scenario
+
+- Config: `configs/posthog_business_models_combined_mvp.yaml`
+- Purpose: generate one PostHog-style dataset containing the union of all researched business-model event types
+- Success event: `upgrade_clicked`
+- Positive signals: coverage-oriented mixed paths such as `limit_reached -> upgrade_modal_shown -> upgrade_clicked`
+- Negative signals: mixed cross-model paths such as `credits_used -> low_balance_warning`
+- Use this when you want one dataset that exercises all supported event names in Grafana or PostgreSQL inspection
+
+## Generating a Fresh PostgreSQL Events Table
+
+Any non-dry run replaces the PostgreSQL `events` table with the rows from the selected config.
+
+For the local Linux PostgreSQL workflow:
+
+```bash
+uv run beton-forge -c configs/posthog_seat_based_mvp.yaml --print-summary
+```
+
+You can swap in any of the new configs, for example:
+
+```bash
+uv run beton-forge -c configs/posthog_usage_based_mvp.yaml --print-summary
+uv run beton-forge -c configs/posthog_business_models_combined_mvp.yaml --print-summary
+```
+
+For the Dockerized PostgreSQL inspection stack:
+
+```bash
+uv run beton-forge \
+  -c configs/posthog_feature_gated_mvp.yaml \
+  --dsn postgresql://beton_forge_writer:beton_forge_writer@127.0.0.1:54329/beton_forge \
+  --print-summary
+```
+
+To regenerate with a different scenario, rerun the same command with a different config path. The `events` table is recreated each run, so Grafana will show the new dataset after a refresh.
+
 ## Development Notes
 
 - Faker is used for human-like metadata, not for core signal logic.

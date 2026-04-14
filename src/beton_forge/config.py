@@ -12,8 +12,27 @@ class BackendConfig(BaseModel):
     dsn: str
 
 
+ScenarioKind = Literal[
+    "posthog_web",
+    "telegram_chat",
+    "posthog_seat_based",
+    "posthog_usage_based",
+    "posthog_transaction_volume",
+    "posthog_storage_based",
+    "posthog_contact_record",
+    "posthog_feature_gated",
+    "posthog_marketplace",
+    "posthog_revenue_share",
+    "posthog_credits_token",
+    "posthog_hybrid_seat_usage",
+    "posthog_freemium_to_paid",
+    "posthog_event_volume",
+    "posthog_business_models_combined",
+]
+
+
 class ScenarioConfig(BaseModel):
-    kind: Literal["posthog_web", "telegram_chat"]
+    kind: ScenarioKind
 
 
 class ScaleConfig(BaseModel):

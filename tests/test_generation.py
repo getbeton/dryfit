@@ -6,6 +6,23 @@ from typer.testing import CliRunner
 
 from beton_forge.cli import app
 from beton_forge.engine.generator import generate_dataset
+from beton_forge.scenarios.posthog_business_models import COMBINED_BUSINESS_MODEL_EVENTS
+
+BUSINESS_MODEL_CONFIGS = [
+    Path("configs/posthog_seat_based_mvp.yaml"),
+    Path("configs/posthog_usage_based_mvp.yaml"),
+    Path("configs/posthog_transaction_volume_mvp.yaml"),
+    Path("configs/posthog_storage_based_mvp.yaml"),
+    Path("configs/posthog_contact_record_mvp.yaml"),
+    Path("configs/posthog_feature_gated_mvp.yaml"),
+    Path("configs/posthog_marketplace_mvp.yaml"),
+    Path("configs/posthog_revenue_share_mvp.yaml"),
+    Path("configs/posthog_credits_token_mvp.yaml"),
+    Path("configs/posthog_hybrid_seat_usage_mvp.yaml"),
+    Path("configs/posthog_freemium_to_paid_mvp.yaml"),
+    Path("configs/posthog_event_volume_mvp.yaml"),
+    Path("configs/posthog_business_models_combined_mvp.yaml"),
+]
 
 
 def test_generation_is_deterministic_for_dry_run() -> None:
@@ -53,3 +70,16 @@ def test_cli_passes_dsn_override_to_generator() -> None:
     assert result.exit_code == 0
     generate.assert_called_once()
     assert generate.call_args.kwargs["dsn"] == "postgresql://override-host/beton_forge"
+
+
+def test_business_model_configs_generate_non_empty_dry_runs() -> None:
+    for config_path in BUSINESS_MODEL_CONFIGS:
+        result = generate_dataset(config_path, dry_run=True, skip_db_write=True)
+        assert result.manifest.row_count > 0, config_path
+
+
+def test_combined_business_model_config_covers_all_researched_events() -> None:
+    result = generate_dataset(Path("configs/posthog_business_models_combined_mvp.yaml"), dry_run=True, skip_db_write=True)
+    generated_events = {event.event_name for event in result.events}
+
+    assert COMBINED_BUSINESS_MODEL_EVENTS.issubset(generated_events)

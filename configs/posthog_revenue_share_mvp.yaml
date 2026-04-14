@@ -1,0 +1,53 @@
+dataset_id: posthog_revenue_share_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_revenue_share
+
+scale:
+  accounts: 240
+  users_per_account_mean: 4
+  sessions_per_user_mean: 7
+  duration_days: 30
+
+success:
+  event_name: commission_calculated
+  entity_type: account
+
+signals:
+  positive:
+    - id: booking_to_commission
+      path: [booking_completed, commission_calculated]
+      count: 75
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: booking_payout_commission
+      path: [booking_completed, payout_processed, commission_calculated]
+      count: 40
+      cohort_filters: [high_intent, medium_intent]
+
+  negative:
+    - id: booking_payout_only
+      path: [booking_completed, payout_processed]
+      count: 45
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: repeated_payout_without_commission
+      path: [payout_processed, payout_processed]
+      count: 20
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.04
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.02
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

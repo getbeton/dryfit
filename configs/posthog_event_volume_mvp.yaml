@@ -1,0 +1,53 @@
+dataset_id: posthog_event_volume_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_event_volume
+
+scale:
+  accounts: 320
+  users_per_account_mean: 4
+  sessions_per_user_mean: 10
+  duration_days: 30
+
+success:
+  event_name: custom_event_tracked
+  entity_type: account
+
+signals:
+  positive:
+    - id: source_to_custom_event
+      path: [source_connected, $pageview, custom_event_tracked]
+      count: 75
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: schema_then_custom_event
+      path: [schema_changed, custom_event_tracked]
+      count: 40
+      cohort_filters: [high_intent, medium_intent]
+
+  negative:
+    - id: source_pageview_only
+      path: [source_connected, $pageview]
+      count: 65
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: repeated_schema_changes
+      path: [schema_changed, schema_changed]
+      count: 30
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.02
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

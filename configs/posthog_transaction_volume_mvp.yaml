@@ -1,0 +1,53 @@
+dataset_id: posthog_transaction_volume_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_transaction_volume
+
+scale:
+  accounts: 280
+  users_per_account_mean: 4
+  sessions_per_user_mean: 7
+  duration_days: 30
+
+success:
+  event_name: payment_completed
+  entity_type: account
+
+signals:
+  positive:
+    - id: order_to_payment
+      path: [order_created, payment_completed]
+      count: 90
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: invoice_to_payment
+      path: [order_created, invoice_generated, payment_completed]
+      count: 50
+      cohort_filters: [high_intent, medium_intent]
+
+  negative:
+    - id: invoiced_not_paid
+      path: [order_created, invoice_generated]
+      count: 55
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: refunded_volume
+      path: [payment_completed, refund_issued]
+      count: 30
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.04
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.02
+  null_property_probability: 0.04
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

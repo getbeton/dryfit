@@ -1,0 +1,53 @@
+dataset_id: posthog_usage_based_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_usage_based
+
+scale:
+  accounts: 320
+  users_per_account_mean: 4
+  sessions_per_user_mean: 9
+  duration_days: 30
+
+success:
+  event_name: job_completed
+  entity_type: account
+
+signals:
+  positive:
+    - id: request_to_job_completion
+      path: [api_request, job_completed]
+      count: 95
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: message_compute_job
+      path: [message_sent, compute_hours_used, job_completed]
+      count: 45
+      cohort_filters: [high_intent, power_user]
+
+  negative:
+    - id: request_compute_stall
+      path: [api_request, compute_hours_used]
+      count: 70
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: message_only_repeat
+      path: [message_sent, message_sent]
+      count: 65
+      cohort_filters: [low_intent, lurker, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.01
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true

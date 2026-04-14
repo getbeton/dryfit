@@ -1,0 +1,53 @@
+dataset_id: posthog_freemium_to_paid_mvp_v1
+seed: 42
+
+backend:
+  kind: postgres
+  dsn: postgresql:///beton_forge
+
+scenario:
+  kind: posthog_freemium_to_paid
+
+scale:
+  accounts: 280
+  users_per_account_mean: 4
+  sessions_per_user_mean: 8
+  duration_days: 30
+
+success:
+  event_name: trial_started
+  entity_type: account
+
+signals:
+  positive:
+    - id: limit_modal_trial
+      path: [limit_reached, upgrade_modal_shown, trial_started]
+      count: 80
+      cohort_filters: [high_intent, medium_intent, power_user]
+    - id: blocked_feature_trial
+      path: [feature_blocked, upgrade_modal_shown, trial_started]
+      count: 45
+      cohort_filters: [high_intent, medium_intent]
+
+  negative:
+    - id: limit_modal_dropoff
+      path: [limit_reached, upgrade_modal_shown]
+      count: 60
+      cohort_filters: [medium_intent, low_intent, lurker]
+    - id: repeated_feature_blocks
+      path: [feature_blocked, feature_blocked]
+      count: 40
+      cohort_filters: [low_intent, noisy_bot_like]
+
+noise:
+  missing_event_probability: 0.05
+  duplicate_event_probability: 0.02
+  out_of_order_probability: 0.03
+  null_property_probability: 0.03
+  anonymous_actor_probability: 0.02
+  weird_property_probability: 0.01
+
+faker:
+  locales: [en_US]
+  use_company_names: true
+  use_emails: true
