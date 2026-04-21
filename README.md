@@ -2,6 +2,8 @@
 
 `dryfit` generates synthetic analytics event data plus hidden benchmark truth so agents can be tested on signal discovery tasks.
 
+> 📚 Browse every scenario with config breakdowns, signal paths, and docker quickstarts on [getbeton.ai/tools/dryfit](https://www.getbeton.ai/tools/dryfit/).
+
 ## Status
 
 The current repo shape is:
@@ -9,7 +11,8 @@ The current repo shape is:
 - one scenario per run
 - one backend: PostgreSQL
 - one physical table: `events`
-- two scenarios: `posthog_web`, `telegram_chat`
+- two baseline scenarios: [`posthog_web`](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-web/), [`telegram_chat`](https://www.getbeton.ai/tools/dryfit/scenarios/telegram-chat/)
+- thirteen PostHog business-model variants — see [full scenario catalog](https://www.getbeton.ai/tools/dryfit/scenarios/)
 - two signal kinds: `positive_path`, `negative_path`
 - truth documents reference actual generated `event_id` values
 
@@ -225,7 +228,9 @@ The PostgreSQL writer replaces the target `events` table each run. This keeps be
 
 The repo now includes additional PostHog DWH scenarios based directly on the business-model research mapping: value metric -> target events -> proxy signal patterns. These configs still use the current path-based signal engine, so the implemented "signals" are sequence proxies for the researched business metrics rather than true MoM or quota-style aggregations.
 
-### Seat-based SaaS
+Each section below links to a detail page with the full config breakdown, signal-path visualization, noise parameters, and a per-scenario quickstart. [Browse all scenarios →](https://www.getbeton.ai/tools/dryfit/scenarios/)
+
+### [Seat-based SaaS](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-seat-based/)
 
 - Config: `configs/posthog_seat_based_mvp.yaml`
 - Value metric: active seats / users
@@ -235,7 +240,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `invite_sent -> user_signed_up`, `seat_activated -> seat_deactivated`
 - Research metrics this proxies: seat growth %, active/total seat ratio, invite-to-activation rate
 
-### Usage-based (metered)
+### [Usage-based (metered)](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-usage-based/)
 
 - Config: `configs/posthog_usage_based_mvp.yaml`
 - Value metric: API calls, compute hours, messages, requests
@@ -245,7 +250,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `api_request -> compute_hours_used`, `message_sent -> message_sent`
 - Research metrics this proxies: usage velocity, quota consumption, usage acceleration
 
-### Transaction / volume-based
+### [Transaction / volume-based](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-transaction-volume/)
 
 - Config: `configs/posthog_transaction_volume_mvp.yaml`
 - Value metric: transactions processed, GMV, payments
@@ -255,7 +260,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `order_created -> invoice_generated`, `payment_completed -> refund_issued`
 - Research metrics this proxies: transaction volume trend, avg transaction value growth, transaction frequency per account
 
-### Storage-based
+### [Storage-based](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-storage-based/)
 
 - Config: `configs/posthog_storage_based_mvp.yaml`
 - Value metric: GB stored, records managed, files hosted
@@ -265,7 +270,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `file_uploaded -> storage_warning_shown`, `storage_warning_shown -> storage_warning_shown`
 - Research metrics this proxies: storage growth rate, days-to-tier-limit, upload frequency trend
 
-### Contact / record-based
+### [Contact / record-based](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-contact-record/)
 
 - Config: `configs/posthog_contact_record_mvp.yaml`
 - Value metric: contacts, leads, subscribers, accounts managed
@@ -275,7 +280,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `list_imported -> segment_created`, `contact_created -> segment_created`
 - Research metrics this proxies: contact growth rate, % of contact limit used, import frequency
 
-### Feature-gated (tiered)
+### [Feature-gated (tiered)](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-feature-gated/)
 
 - Config: `configs/posthog_feature_gated_mvp.yaml`
 - Value metric: plan tier / feature access level
@@ -285,7 +290,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `advanced_feature_attempted -> feature_gate_shown`, `upgrade_clicked -> downgrade`
 - Research metrics this proxies: gate-hit frequency, advanced-feature attempt rate, time between gate hits
 
-### Platform / marketplace
+### [Platform / marketplace](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-marketplace/)
 
 - Config: `configs/posthog_marketplace_mvp.yaml`
 - Value metric: listings, storefronts, connected accounts, integrations
@@ -295,7 +300,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `account_connected -> storefront_activated`, `integration_enabled -> account_connected`
 - Research metrics this proxies: active listing growth, seller/buyer activation rate, marketplace liquidity ratio
 
-### Revenue-share / take-rate
+### [Revenue-share / take-rate](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-revenue-share/)
 
 - Config: `configs/posthog_revenue_share_mvp.yaml`
 - Value metric: revenue processed, bookings, GMV through platform
@@ -305,7 +310,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `booking_completed -> payout_processed`, `payout_processed -> payout_processed`
 - Research metrics this proxies: GMV growth trend, take-rate stability, payout frequency
 
-### Credits / token-based
+### [Credits / token-based](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-credits-token/)
 
 - Config: `configs/posthog_credits_token_mvp.yaml`
 - Value metric: credits consumed, tokens used, compute units
@@ -315,7 +320,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `credits_used -> low_balance_warning`, `low_balance_warning -> low_balance_warning`
 - Research metrics this proxies: burn rate, days-to-zero, top-up frequency, auto-refill adoption
 
-### Hybrid (seat + usage)
+### [Hybrid (seat + usage)](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-hybrid-seat-usage/)
 
 - Config: `configs/posthog_hybrid_seat_usage_mvp.yaml`
 - Value metric: seats plus usage overage
@@ -325,7 +330,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `invite_sent -> user_signed_up -> seat_activated`, `api_request -> job_completed`
 - Research metrics this proxies: seat growth plus usage acceleration, overage frequency
 
-### Freemium-to-paid
+### [Freemium-to-paid](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-freemium-to-paid/)
 
 - Config: `configs/posthog_freemium_to_paid_mvp.yaml`
 - Value metric: active usage hitting free-tier limits
@@ -335,7 +340,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `limit_reached -> upgrade_modal_shown`, `feature_blocked -> feature_blocked`
 - Research metrics this proxies: time-to-limit, limit-hit frequency, conversion funnel drop-off
 
-### Event-volume SaaS
+### [Event-volume SaaS](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-event-volume/)
 
 - Config: `configs/posthog_event_volume_mvp.yaml`
 - Value metric: events tracked, data points ingested, log lines
@@ -345,7 +350,7 @@ The repo now includes additional PostHog DWH scenarios based directly on the bus
 - Negative signals: `source_connected -> $pageview`, `schema_changed -> schema_changed`
 - Research metrics this proxies: ingestion volume trend, event-type diversity, new-source activation rate
 
-### Combined coverage scenario
+### [Combined coverage scenario](https://www.getbeton.ai/tools/dryfit/scenarios/posthog-combined-coverage/)
 
 - Config: `configs/posthog_business_models_combined_mvp.yaml`
 - Purpose: generate one PostHog-style dataset containing the union of all researched business-model event types
